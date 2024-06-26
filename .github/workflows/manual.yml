@@ -1,0 +1,37 @@
+name: Workflow
+'on':
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: null
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: List contents
+        run: ls
+      - name: compile classes
+        working-directory: ./src
+        run: >-
+          javac -cp
+          "../testresources/junit-platform-console-standalone-1.6.0.jar"
+          "./poe-st10260039-prog.zip/.java" "./ packageName/SecondFile.java"
+          "../test/ poe-st10260039-prog.zip/TestFile.java"
+      - name: List contents of src directory after compile
+        working-directory: ./src/poe-st10260039-prog.zip
+        run: ls
+      - name: create testresources/packageName directory
+        run: mkdir -p ./testresources/packageName
+      - name: copy compiled classes to testresources directory
+        working-directory: ./src/packageName
+        run: cp -t  "../../test/packageName " FirstClass.class SecondClass.class
+      - name: copy compiled Test classes to testresources directory
+        working-directory: ./test/packageName
+        run: cp -t  "../../testresources/packageName" TestClass.class
+      - name: List contents test package
+        working-directory: ./test/packageName
+        run: ls
